@@ -239,3 +239,21 @@
 2024/10/26 16:45:47 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
 2024/10/26 16:50:53 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
 2024/10/26 16:50:53 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.240.1, server: 90.156.170.155, request: "POST /api/user HTTP/1.1", upstream: "http://192.168.240.7:8000/api/user", host: "localhost"
+2024/10/26 17:02:40 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
+2024/10/26 17:05:07 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
+2024/10/26 17:05:07 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.240.1, server: 90.156.170.155, request: "POST /api/purchasers/verify_and_request_code HTTP/1.1", upstream: "http://192.168.240.6:8000/api/purchasers/verify_and_request_code", host: "localhost"
+2024/10/26 17:06:44 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
+2024/10/26 17:07:49 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
+2024/10/26 17:10:42 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
+2024/10/26 17:10:42 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.240.1, server: 90.156.170.155, request: "POST /api/purchasers/verify_and_request_code HTTP/1.1", upstream: "http://192.168.240.7:8000/api/purchasers/verify_and_request_code", host: "localhost"
+2024/10/26 17:10:43 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.240.1, server: 90.156.170.155, request: "POST /api/purchasers/verify_and_request_code HTTP/1.1", upstream: "http://192.168.240.7:8000/api/purchasers/verify_and_request_code", host: "localhost"
+2024/10/26 17:10:43 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.240.1, server: 90.156.170.155, request: "POST /api/purchasers/verify_and_request_code HTTP/1.1", upstream: "http://192.168.240.7:8000/api/purchasers/verify_and_request_code", host: "localhost"
+2024/10/26 17:10:44 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.240.1, server: 90.156.170.155, request: "POST /api/purchasers/verify_and_request_code HTTP/1.1", upstream: "http://192.168.240.7:8000/api/purchasers/verify_and_request_code", host: "localhost"
+2024/10/26 17:28:00 [info] 20#20: *8 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
+2024/10/26 17:31:46 [info] 20#20: *14 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
+2024/10/26 17:40:44 [error] 20#20: *18 "/etc/nginx/html/index.html" is not found (2: No such file or directory), client: 192.168.240.1, server: 90.156.170.155, request: "GET / HTTP/1.1", host: "localhost"
+2024/10/26 17:40:44 [error] 20#20: *18 open() "/etc/nginx/html/favicon.ico" failed (2: No such file or directory), client: 192.168.240.1, server: 90.156.170.155, request: "GET /favicon.ico HTTP/1.1", host: "localhost", referrer: "http://localhost/"
+2024/10/26 17:40:44 [info] 20#20: *18 client 192.168.240.1 closed keepalive connection
+2024/10/26 18:19:01 [emerg] 1#1: host not found in upstream "app:8080" in /etc/nginx/conf.d/app.conf:18
+2024/10/26 18:20:03 [emerg] 1#1: host not found in upstream "app:8080" in /etc/nginx/conf.d/app.conf:18
+2024/10/26 18:21:40 [emerg] 1#1: host not found in upstream "app:8080" in /etc/nginx/conf.d/app.conf:18

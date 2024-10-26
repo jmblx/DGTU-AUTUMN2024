@@ -274,3 +274,25 @@
 192.168.240.1 - - [26/Oct/2024:16:45:47 +0000] "POST /api/user HTTP/1.1" 500 21 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
 192.168.240.1 - - [26/Oct/2024:16:50:53 +0000] "POST /api/user HTTP/1.1" 502 157 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
 192.168.240.1 - - [26/Oct/2024:16:50:55 +0000] "POST /api/user HTTP/1.1" 200 30 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:02:40 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:05:07 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 502 157 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:05:12 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:06:44 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:07:49 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:08:35 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:08:35 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:08:36 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:08:37 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:10:42 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 502 157 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:10:43 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 502 157 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:10:43 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 502 157 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:10:44 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 502 157 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:10:49 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 500 21 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:28:00 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:28:20 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:28:21 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:28:23 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:31:46 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:31:47 +0000] "POST /api/purchasers/verify_and_request_code HTTP/1.1" 404 51 "-" "PostmanRuntime/7.42.0" "-" to: fastapi_app
+192.168.240.1 - - [26/Oct/2024:17:40:44 +0000] "GET / HTTP/1.1" 404 153 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0" "-" to: -
+192.168.240.1 - - [26/Oct/2024:17:40:44 +0000] "GET /favicon.ico HTTP/1.1" 404 153 "http://localhost/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0" "-" to: -

@@ -1,7 +1,13 @@
+import logging
+
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Path, Query, BackgroundTasks
 from pydantic import BaseModel, EmailStr
 import json
 from typing import Optional
+
+from starlette.responses import Response
+
 from models import Purchaser, Receipt, ReceiptItem
 from fastapi.responses import JSONResponse
 import smtplib
@@ -11,9 +17,19 @@ import random
 import string
 import time
 
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+)
+
+
 app = FastAPI(title="Зелёный Ростов - API", version="1.0.0", root_path="/receipt")
 
 DATA_FILE = "data.json"
+
+load_dotenv()
 
 # Загружаем данные из JSON
 def load_data():
@@ -31,6 +47,7 @@ def generate_confirmation_code(length=6):
 
 # Функция для отправки email через SMTP
 def send_confirmation_email(email: str, code: str):
+    print(f"Отправляем код подтверждения на {email}")
     smtp_user = os.getenv("SMTP_USER")  # Ваш Gmail адрес
     smtp_password = os.getenv("SMTP_PASSWORD")  # Ваш пароль или App Password
     smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
@@ -38,6 +55,7 @@ def send_confirmation_email(email: str, code: str):
 
     if not smtp_user or not smtp_password:
         print("SMTP_USER и SMTP_PASSWORD должны быть установлены в переменных окружения.")
+        print(smtp_user, )
         return
 
     msg = EmailMessage()
@@ -68,11 +86,13 @@ def get_purchaser(
 ):
     data = load_data()
     for purchaser in data["purchasers"]:
+        logging.info("жаба: %s, %s", purchaser.get("email"), email)
+
         if purchaser.get("email") == email or purchaser.get("phone_number") == phone_number:
             return {"id": purchaser["id"], "access": purchaser["access"]}
     raise HTTPException(status_code=404, detail="Покупатель не найден")
 
-# Эндпоинт для отправки кода подтверждения
+
 @app.post("/purchasers/{purchaser_id}/grantAccess")
 def grant_access(
         background_tasks: BackgroundTasks,
@@ -96,7 +116,7 @@ def grant_access(
     # Добавление задачи отправки email в фоновый режим
     background_tasks.add_task(send_confirmation_email, purchaser["email"], code)
 
-    return JSONResponse(status_code=204, content=None)
+    return Response(status_code=204)
 
 # Эндпоинт для подтверждения кода доступа
 @app.post("/purchasers/{purchaser_id}/grantAccess/{code}")
@@ -123,7 +143,7 @@ def confirm_access(
     if code != stored_code:
         raise HTTPException(status_code=403, detail="Неверный код подтверждения")
 
-    return JSONResponse(status_code=204, content={"access": True})
+    return Response(status_code=204)
 
 
 @app.get("/purchasers/{purchaser_id}/receipts")

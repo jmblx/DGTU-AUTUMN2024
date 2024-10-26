@@ -80,6 +80,13 @@ services:
       - receipt_api/.env
     networks:
       - custom
+    volumes:
+      - ./receipt_api_logs:/app/logs  # Монтируем директорию для логов на хосте
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"         # Максимальный размер файла лога (например, 10 MB)
+        max-file: "5"
 
   nginx:
     image: nginx:latest

@@ -31,7 +31,7 @@ async def confirm_code_and_fetch_receipts(
         code: str,
         from_time: str,
         to_time: str,
-        external_service: ExternalAPIService = Depends()
+        external_service: FromDishka[ExternalAPIService]
 ):
     """
     Эндпоинт для подтверждения кода и получения чеков.
@@ -47,3 +47,27 @@ async def confirm_code_and_fetch_receipts(
     # await save_receipts_to_db(receipts)
 
     return receipts
+
+# import requests
+#
+# # Базовый URL API (проверьте, чтобы он соответствовал вашему конфигурационному значению)
+# base_url = "http://localhost:8000"
+#
+# # Параметры запроса
+# params = {
+#     "purchaser_id": "2",  # ID покупателя
+#     "code": "034752",      # Код подтверждения
+#     "from_time": "1729686754",  # Начало временного диапазона
+#     "to_time": "1729686760"     # Конец временного диапазона
+# }
+#
+# # Выполнение запроса к API
+# response = requests.post(f"{base_url}/purchasers/confirm_code_and_fetch_receipts", params=params)
+#
+# # Обработка ответа
+# if response.status_code == 200:
+#     receipts = response.json()
+#     print("Полученные чеки:", receipts)
+# else:
+#     print(f"Ошибка {response.status_code}: {response.json().get('detail')}")
+
