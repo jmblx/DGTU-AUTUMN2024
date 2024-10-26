@@ -24,8 +24,8 @@ jobs:
           USER: "root"
         run: |
           ssh -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
-            cd /path/to/your/project
-            git pull
+            cd DGTU-AUTUMN2024
             docker-compose down
+            git pull
             docker-compose up --build -d
           EOF
