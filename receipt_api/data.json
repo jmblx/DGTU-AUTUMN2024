@@ -16,6 +16,23 @@
           "total_price": 402.99
         }
       ]
+    },
+    {
+      "id": "2",
+      "email": "babakapa729@gmail.com",
+      "phone_number": "79990301122",
+      "access": false,
+      "receipts": [
+        {
+          "id": "receipt1",
+          "time": "1729686754",
+          "items": [
+            { "name": "Джем вишнёвый дой-пак", "count": 2, "price": 64.5 },
+            { "name": "Куриная грудка охлаждённая", "count": 0.98, "price": 299.99 }
+          ],
+          "total_price": 402.99
+        }
+      ]
     }
   ]
 }
