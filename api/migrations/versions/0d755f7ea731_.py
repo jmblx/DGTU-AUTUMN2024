@@ -1,18 +1,19 @@
-"""Add achievement_reward and event_reward tables
+"""empty message
 
-Revision ID: 92907a85cee0
+Revision ID: 0d755f7ea731
 Revises: 
-Create Date: 2024-10-26 17:55:17.389356
+Create Date: 2024-10-26 19:11:25.207237
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy import JSON
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '92907a85cee0'
+revision: str = '0d755f7ea731'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -61,20 +62,11 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('event_id', 'reward_id')
     )
     op.create_table('reward_achievement',
-    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('reward_id', sa.Integer(), nullable=True),
-    sa.Column('achievement_id', sa.Integer(), nullable=True),
+    sa.Column('reward_id', sa.Integer(), nullable=False),
+    sa.Column('achievement_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['achievement_id'], ['achievement.id'], ),
     sa.ForeignKeyConstraint(['reward_id'], ['reward.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('reward_event',
-    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('reward_id', sa.Integer(), nullable=True),
-    sa.Column('event_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
-    sa.ForeignKeyConstraint(['reward_id'], ['reward.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('reward_id', 'achievement_id')
     )
     op.create_table('user',
     sa.Column('id', sa.String(), nullable=False),
@@ -101,9 +93,9 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('user_achievement',
-    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('achievement_id', sa.Integer(), nullable=True),
-    sa.Column('user_id', sa.String(), nullable=True),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('achievement_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.String(), nullable=False),
     sa.Column('achieved_time', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=True),
     sa.ForeignKeyConstraint(['achievement_id'], ['achievement.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
@@ -120,6 +112,23 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('user_reward',
+    sa.Column('user_id', sa.String(), nullable=False),
+    sa.Column('reward_id', sa.Integer(), nullable=False),
+    sa.Column('is_used', sa.Boolean(), nullable=True),
+    sa.Column('code', sa.String(), nullable=True),
+    sa.Column('amount', sa.Integer(), nullable=False),
+    sa.Column('received_date', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=True),
+    sa.Column('activated_date', sa.DateTime(), nullable=True),
+    sa.Column('is_bought', sa.Boolean(), nullable=True),
+    sa.Column('event_id', sa.Integer(), nullable=True),
+    sa.Column('achievement_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['achievement_id'], ['achievement.id'], ),
+    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
+    sa.ForeignKeyConstraint(['reward_id'], ['reward.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('user_id', 'reward_id')
+    )
     op.create_table('receipt_items',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('receipt_id', sa.String(), nullable=False),
@@ -130,16 +139,59 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
+    role_table = sa.table(
+        'role',
+        sa.Column('name', sa.String, nullable=False),
+        sa.Column('permissions', JSON, nullable=True)
+    )
 
+    # Выполняем bulk insert
+    op.bulk_insert(
+        role_table,
+        [
+            {
+                "name": "user",
+                "permissions": {}  # Пустое JSON-значение для permissions
+            },
+            {
+                "name": "admin",
+                "permissions": {}  # Пустое JSON-значение для permissions
+            }
+        ]
+    )
+    reward_table = sa.table(
+        'reward',
+        sa.Column('title', sa.String),
+        sa.Column('file_path', sa.String),
+        sa.Column('is_market_available', sa.Boolean),
+        sa.Column('market_cost', sa.Float)
+    )
+    op.bulk_insert(
+        reward_table,
+        [
+            {
+                "title": "leaf",
+                "file_path": "http://localhost:9000/rewards/leaf.svg",
+                "is_market_available": False,
+                "market_cost": None
+            },
+            {
+                "title": "xp",
+                "file_path": None,
+                "is_market_available": False,
+                "market_cost": None
+            }
+        ]
+    )
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('receipt_items')
+    op.drop_table('user_reward')
     op.drop_table('user_event')
     op.drop_table('user_achievement')
     op.drop_table('receipts')
     op.drop_table('user')
-    op.drop_table('reward_event')
     op.drop_table('reward_achievement')
     op.drop_table('event_reward')
     op.drop_table('role')

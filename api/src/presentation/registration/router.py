@@ -1,6 +1,8 @@
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from domain.services.user.user_service_interface import UserServiceInterface
 from presentation.registration.schemas import UserRegistration, UserLogin

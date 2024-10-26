@@ -218,3 +218,24 @@
 2024/10/26 15:48:37 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
 2024/10/26 15:48:37 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.224.1, server: localhost, request: "POST /api/user HTTP/1.1", upstream: "http://192.168.224.6:8000/api/user", host: "localhost"
 2024/10/26 15:48:39 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.224.1, server: localhost, request: "POST /api/user HTTP/1.1", upstream: "http://192.168.224.6:8000/api/user", host: "localhost"
+2024/10/26 15:53:17 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
+2024/10/26 15:56:17 [info] 20#20: *4 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
+2024/10/26 15:57:31 [info] 20#20: *5 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
+2024/10/26 16:04:32 [info] 20#20: *8 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
+2024/10/26 16:09:49 [info] 20#20: *11 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
+2024/10/26 16:12:15 [info] 20#20: *14 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
+2024/10/26 16:12:34 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
+2024/10/26 16:12:34 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.224.1, server: 90.156.170.155, request: "POST /api/user HTTP/1.1", upstream: "http://192.168.224.6:8000/api/user", host: "localhost"
+2024/10/26 16:28:24 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
+2024/10/26 16:30:35 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
+2024/10/26 16:30:35 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.224.1, server: 90.156.170.155, request: "POST /api/user HTTP/1.1", upstream: "http://192.168.224.7:8000/api/user", host: "localhost"
+2024/10/26 16:30:36 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.224.1, server: 90.156.170.155, request: "POST /api/user HTTP/1.1", upstream: "http://192.168.224.7:8000/api/user", host: "localhost"
+2024/10/26 16:31:02 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
+2024/10/26 16:31:02 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.224.1, server: 90.156.170.155, request: "POST /api/user HTTP/1.1", upstream: "http://192.168.224.6:8000/api/user", host: "localhost"
+2024/10/26 16:31:05 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.224.1, server: 90.156.170.155, request: "POST /api/user HTTP/1.1", upstream: "http://192.168.224.6:8000/api/user", host: "localhost"
+2024/10/26 16:33:50 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.224.1, server: 90.156.170.155, request: "POST /api/user HTTP/1.1", upstream: "http://192.168.224.7:8000/api/user", host: "localhost"
+2024/10/26 16:33:50 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.224.1, server: 0.0.0.0:80
+2024/10/26 16:40:31 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
+2024/10/26 16:45:47 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
+2024/10/26 16:50:53 [info] 20#20: *1 client closed connection while waiting for request, client: 192.168.240.1, server: 0.0.0.0:80
+2024/10/26 16:50:53 [error] 20#20: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.240.1, server: 90.156.170.155, request: "POST /api/user HTTP/1.1", upstream: "http://192.168.240.7:8000/api/user", host: "localhost"

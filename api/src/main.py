@@ -44,6 +44,7 @@ setup_dishka(container=container, app=app)
 logger = logging.getLogger("fastapi")
 logger.setLevel(logging.INFO)
 
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
