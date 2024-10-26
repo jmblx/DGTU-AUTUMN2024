@@ -57,3 +57,7 @@ class BaseRepository(ABC, Generic[T]):
     @abstractmethod
     async def soft_delete_by_fields(self, search_data: dict[str, Any]):
         pass
+
+    @abstractmethod
+    def get_random_rows(self, amount: int, exclude_ids: list[int] | None = None):
+        pass

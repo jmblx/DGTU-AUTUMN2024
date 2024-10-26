@@ -20,10 +20,9 @@ class EntityServiceImpl(EntityService[T], Generic[T]):
     async def get_by_id(
         self,
         entity_id: int | UUID,
-        selected_fields: dict[Any, dict[Any, dict]] | None = None,
     ) -> T:
         entity = await self._base_repo.get_by_fields(
-            {"id": entity_id}, selected_fields
+            {"id": entity_id}
         )
         return entity
 
@@ -36,6 +35,9 @@ class EntityServiceImpl(EntityService[T], Generic[T]):
             search_params, selected_fields
         )
         return entity
+
+    async def get_random_rows(self, amount: int, exclude_ids: list):
+        return self._base_repo.get_random_rows(amount, exclude_ids)
 
     async def get_many_by_fields(
         self,

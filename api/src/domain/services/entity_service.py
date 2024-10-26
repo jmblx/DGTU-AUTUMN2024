@@ -6,11 +6,6 @@ from infrastructure.repositories.base_repository import T
 
 
 class EntityService(ABC, Generic[T]):
-    # @abstractmethod
-    # async def create(self, entity_data: BaseDTO) -> T:
-    #     """Создание сущности"""
-    #     pass
-    #
     @abstractmethod
     async def get_by_id(
         self,
@@ -18,6 +13,9 @@ class EntityService(ABC, Generic[T]):
         selected_fields: dict[Any, dict[Any, dict]] | None = None,
     ) -> T:
         """Получение сущности по ID"""
+
+    @abstractmethod
+    async def get_random_rows(self, amount: int, exclude_ids: list[int] | None = None) -> list[T]: ...
 
     @abstractmethod
     async def create(

@@ -11,9 +11,10 @@ from sqlalchemy import (
     desc,
     insert,
     select,
-    update,
+    update, func,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.functions import count
 
 from infrastructure.db_models.database import Base
 from domain.repositories.base_repo import BaseRepository
@@ -37,6 +38,10 @@ class BaseRepositoryImpl(BaseRepository[T], Generic[T]):
         ).scalar()
         await self._session.commit()
         return entitiy_id
+
+    async def get_random_rows(self, amount: int, exclude_ids: list[int] | None = None):
+        query = self._session.query(self._model).filter(~self._model.id.in_(exclude_ids))
+        return query.order_by(func.random()).limit(count).all()
 
     async def get_by_fields(
         self,

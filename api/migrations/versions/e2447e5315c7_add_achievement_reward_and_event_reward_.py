@@ -1,8 +1,8 @@
-"""empty message
+"""Add achievement_reward and event_reward tables
 
-Revision ID: 0d755f7ea731
+Revision ID: e2447e5315c7
 Revises: 
-Create Date: 2024-10-26 19:11:25.207237
+Create Date: 2024-10-27 00:41:29.849138
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ from sqlalchemy import JSON
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '0d755f7ea731'
+revision: str = 'e2447e5315c7'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -37,7 +37,8 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('description', sa.String(), nullable=False),
     sa.Column('is_group', sa.Boolean(), nullable=False),
-    sa.Column('file_path', sa.String(), nullable=False),
+    sa.Column('file_path', sa.String(), nullable=True),
+    sa.Column('amount', sa.Float(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('reward',
@@ -55,18 +56,18 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('event_reward',
-    sa.Column('event_id', sa.Integer(), nullable=False),
-    sa.Column('reward_id', sa.Integer(), nullable=False),
+    sa.Column('event_id', sa.Integer(), nullable=True),
+    sa.Column('reward_id', sa.Integer(), nullable=True),
+    sa.Column('amount', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
-    sa.ForeignKeyConstraint(['reward_id'], ['reward.id'], ),
-    sa.PrimaryKeyConstraint('event_id', 'reward_id')
+    sa.ForeignKeyConstraint(['reward_id'], ['reward.id'], )
     )
     op.create_table('reward_achievement',
-    sa.Column('reward_id', sa.Integer(), nullable=False),
-    sa.Column('achievement_id', sa.Integer(), nullable=False),
+    sa.Column('reward_id', sa.Integer(), nullable=True),
+    sa.Column('achievement_id', sa.Integer(), nullable=True),
+    sa.Column('amount', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['achievement_id'], ['achievement.id'], ),
-    sa.ForeignKeyConstraint(['reward_id'], ['reward.id'], ),
-    sa.PrimaryKeyConstraint('reward_id', 'achievement_id')
+    sa.ForeignKeyConstraint(['reward_id'], ['reward.id'], )
     )
     op.create_table('user',
     sa.Column('id', sa.String(), nullable=False),
@@ -113,8 +114,8 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('user_reward',
-    sa.Column('user_id', sa.String(), nullable=False),
-    sa.Column('reward_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.String(), nullable=True),
+    sa.Column('reward_id', sa.Integer(), nullable=True),
     sa.Column('is_used', sa.Boolean(), nullable=True),
     sa.Column('code', sa.String(), nullable=True),
     sa.Column('amount', sa.Integer(), nullable=False),
@@ -126,8 +127,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['achievement_id'], ['achievement.id'], ),
     sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
     sa.ForeignKeyConstraint(['reward_id'], ['reward.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('user_id', 'reward_id')
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], )
     )
     op.create_table('receipt_items',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
@@ -138,7 +138,6 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['receipt_id'], ['receipts.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    # ### end Alembic commands ###
     role_table = sa.table(
         'role',
         sa.Column('name', sa.String, nullable=False),
@@ -159,30 +158,92 @@ def upgrade() -> None:
             }
         ]
     )
-    reward_table = sa.table(
-        'reward',
-        sa.Column('title', sa.String),
-        sa.Column('file_path', sa.String),
-        sa.Column('is_market_available', sa.Boolean),
-        sa.Column('market_cost', sa.Float)
-    )
-    op.bulk_insert(
-        reward_table,
-        [
-            {
-                "title": "leaf",
-                "file_path": "http://localhost:9000/rewards/leaf.svg",
-                "is_market_available": False,
-                "market_cost": None
-            },
-            {
-                "title": "xp",
-                "file_path": None,
-                "is_market_available": False,
-                "market_cost": None
-            }
-        ]
-    )
+    EVENTS = [
+        ("Отчистка берега", "Очистить {} кв. м. от пластика и других отходов."),
+        ("Сортировка мусора", "Отсортировать {} кг мусора по контейнерам."),
+        ("Сдать бутылки", "Сдать {} пластиковых бутылок."),
+        ("Сдать батарейки", "Сдать {} батареек на специальный пункт."),
+        ("Посетить семинар", "Посетить семинар, отсканировать QR-код и ответить на {} вопросов."),
+    ]
+
+    # Награды
+    REWARDS = [
+        {"id": 1, "title": "leaves", "file_path": None, "is_market_available": False, "market_cost": None},
+        {"id": 2, "title": "xp", "file_path": None, "is_market_available": False, "market_cost": None},
+        {"id": 3, "title": "cap", "file_path": None, "is_market_available": False, "market_cost": None},
+        # Без привязки к событиям
+        {"id": 4, "title": "t-shirt", "file_path": None, "is_market_available": False, "market_cost": None},
+        {"id": 5, "title": "hoodie", "file_path": None, "is_market_available": False, "market_cost": None},
+        {"id": 6, "title": "ticket", "file_path": None, "is_market_available": False, "market_cost": None},
+    ]
+
+    # Связи Event и Reward для уровней сложности
+    EVENT_REWARDS = []
+    op.bulk_insert(sa.table('reward',
+                            sa.Column('id', sa.Integer),
+                            sa.Column('title', sa.String),
+                            sa.Column('file_path', sa.String),
+                            sa.Column('is_market_available', sa.Boolean),
+                            sa.Column('market_cost', sa.Float)),
+                   REWARDS)
+
+    # Добавляем события и связи event_reward
+    event_counter = 1
+    for event_name, description in EVENTS:
+        # Легкое задание
+        op.execute(
+            sa.insert(sa.table('event',
+                               sa.Column('id', sa.Integer),
+                               sa.Column('description', sa.String),
+                               sa.Column('amount', sa.Float),
+                               sa.Column('file_path', sa.String),
+                               sa.Column('is_group', sa.Boolean)))
+            .values(id=event_counter, description=f"{description.format(10)}", amount=10, is_group=False)
+        )
+        EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 1, "amount": 10})  # leaves
+        EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 2, "amount": 30})  # xp
+        event_counter += 1
+
+        # Среднее задание
+        op.execute(
+            sa.insert(sa.table('event',
+                               sa.Column('id', sa.Integer),
+                               sa.Column('description', sa.String),
+                               sa.Column('amount', sa.Float),
+                               sa.Column('file_path', sa.String),
+                               sa.Column('is_group', sa.Boolean)))
+            .values(id=event_counter, description=f"{description.format(20)}", amount=20, is_group=False)
+        )
+        EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 1, "amount": 20})  # leaves
+        EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 2, "amount": 50})  # xp
+        event_counter += 1
+
+        # Сложное задание
+        op.execute(
+            sa.insert(sa.table('event',
+                               sa.Column('id', sa.Integer),
+                               sa.Column('description', sa.String),
+                               sa.Column('amount', sa.Float),
+                               sa.Column('file_path', sa.String),
+                               sa.Column('is_group', sa.Boolean)))
+            .values(id=event_counter, description=f"{description.format(50)}", amount=50, is_group=False)
+        )
+        EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 1, "amount": 30})  # leaves
+        EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 2, "amount": 70})  # xp
+
+        # Добавляем билет для некоторых сложных задач
+        if event_name in ["Отчистка берега", "Сдать батарейки"]:
+            EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 6, "amount": 1})  # ticket
+
+        event_counter += 1
+
+    # Выполняем bulk insert для связи event_reward
+    op.bulk_insert(sa.table('event_reward',
+                            sa.Column('event_id', sa.Integer),
+                            sa.Column('reward_id', sa.Integer),
+                            sa.Column('amount', sa.Integer)),
+                   EVENT_REWARDS)
+
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###

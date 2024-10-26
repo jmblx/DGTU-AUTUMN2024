@@ -9,10 +9,11 @@ from presentation.receipts.schemas import Receipt
 
 router = APIRouter(tags=["Receipts API"], route_class=DishkaRoute)
 
+
 @router.post("/purchasers/verify_and_request_code", response_model=dict)
 async def verify_and_request_code(
-        user: FromDishka[User],
-        external_service: FromDishka[ExternalAPIService],
+    user: FromDishka[User],
+    external_service: FromDishka[ExternalAPIService],
 ):
     if user is None:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
@@ -20,7 +21,7 @@ async def verify_and_request_code(
 
     if purchaser:
         await external_service.grant_access(purchaser.id)
-        return {"message": "Код подтверждения отправлен на email покупателя"}
+        return {"purchaser_id": purchaser.id}
     else:
         raise HTTPException(status_code=404, detail="Покупатель не найден")
 
@@ -29,9 +30,9 @@ async def verify_and_request_code(
 async def confirm_code_and_fetch_receipts(
         purchaser_id: str,
         code: str,
-        from_time: str,
-        to_time: str,
-        external_service: FromDishka[ExternalAPIService]
+        external_service: FromDishka[ExternalAPIService],
+        from_time: str | None = None,
+        to_time: str | None = None,
 ):
     """
     Эндпоинт для подтверждения кода и получения чеков.

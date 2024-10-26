@@ -28,6 +28,7 @@ class Achievement(Base):
 
 reward_achievement = Table(
     'reward_achievement', Base.metadata,
-    Column('reward_id', Integer, ForeignKey('reward.id'), primary_key=True),
-    Column('achievement_id', Integer, ForeignKey('achievement.id'), primary_key=True)
+    Column('reward_id', Integer, ForeignKey('reward.id')),
+    Column('achievement_id', Integer, ForeignKey('achievement.id')),
+    Column('amount', Integer, nullable=False)
 )

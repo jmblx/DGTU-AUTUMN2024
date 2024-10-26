@@ -16,10 +16,8 @@ from sqlalchemy.orm import configure_mappers
 from core.di.container import container
 from presentation.receipts.router import router as receipt_router
 from presentation.registration.router import router as reg_router
+from presentation.events.router import router as event_router
 
-# from logstash import TCPLogstashHandler
-# from logstash import TCPLogstashHandler
-# from starlette_exporter import PrometheusMiddleware, handle_metrics
 import core.db.logs  # noqa: F401
 
 from infrastructure.db_models.user.models import User
@@ -65,6 +63,7 @@ def read_root():
 
 app.include_router(receipt_router)
 app.include_router(reg_router)
+app.include_router(event_router)
 
 origins = ["*"]
 app.add_middleware(

@@ -29,8 +29,8 @@ class Reward(Base):
 
 user_reward = Table(
     'user_reward', Base.metadata,
-    Column('user_id', String, ForeignKey('user.id'), primary_key=True),
-    Column('reward_id', Integer, ForeignKey('reward.id'), primary_key=True),
+    Column('user_id', String, ForeignKey('user.id')),
+    Column('reward_id', Integer, ForeignKey('reward.id')),
     Column('is_used', Boolean, default=False),
     Column('code', String, nullable=True),
     Column('amount', Integer, nullable=False),

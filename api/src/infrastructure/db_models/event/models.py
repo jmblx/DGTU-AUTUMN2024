@@ -8,8 +8,9 @@ from infrastructure.db_models.database import Base
 
 event_reward = Table(
     'event_reward', Base.metadata,
-    Column('event_id', Integer, ForeignKey('event.id'), primary_key=True),
-    Column('reward_id', Integer, ForeignKey('reward.id'), primary_key=True)
+    Column('event_id', Integer, ForeignKey('event.id')),
+    Column('reward_id', Integer, ForeignKey('reward.id')),
+    Column('amount', Integer, nullable=False)
 )
 
 
@@ -26,7 +27,8 @@ class Event(Base):
         secondary="user_event",
     )
     rewards_ev = relationship("Reward", uselist=True, back_populates="events_rew", secondary=event_reward)
-    file_path: Mapped[str]
+    file_path: Mapped[str] = mapped_column(nullable=True)
+    amount: Mapped[float] = mapped_column(nullable=False)
 
 
 class UserEvent(Base):
