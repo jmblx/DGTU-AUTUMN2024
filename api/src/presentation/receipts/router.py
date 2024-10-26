@@ -42,7 +42,6 @@ async def confirm_code_and_fetch_receipts(
     # Получаем чеки
     receipts = await external_service.get_receipts(purchaser_id, from_time, to_time)
 
-    # Здесь вы можете добавить логику для загрузки чеков в базу данных
     # Например:
     # await save_receipts_to_db(receipts)
 
