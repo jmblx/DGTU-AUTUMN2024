@@ -42,11 +42,9 @@ class EntityServiceImpl(EntityService[T], Generic[T]):
     async def get_many_by_fields(
         self,
         search_params: dict[str, Any],
-        selected_fields: dict[Any, dict[Any, dict]] | None = None,
-        order_by: dict[str, str] | None = None,
     ) -> list[T]:
         entities = await self._base_repo.get_many_by_fields(
-            search_params, selected_fields, order_by
+            search_params
         )
         return entities
 

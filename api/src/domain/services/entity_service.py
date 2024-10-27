@@ -9,8 +9,7 @@ class EntityService(ABC, Generic[T]):
     @abstractmethod
     async def get_by_id(
         self,
-        entity_id: int | UUID,
-        selected_fields: dict[Any, dict[Any, dict]] | None = None,
+        entity_id: int | str,
     ) -> T:
         """Получение сущности по ID"""
 
@@ -35,8 +34,6 @@ class EntityService(ABC, Generic[T]):
     async def get_many_by_fields(
         self,
         search_params: dict[str, Any],
-        selected_fields: dict[Any, dict[Any, dict]] | None = None,
-        order_by: dict[str, str] | None = None,
     ) -> list[T]: ...
 
     @abstractmethod

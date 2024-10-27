@@ -8,6 +8,7 @@ from firebase_admin import credentials, auth
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import FirebaseConfig
+from domain.services.achievement.ach_service_interface import AchievementServiceInterface
 from domain.services.event.event_service_interface import EventServiceInterface
 from domain.services.storage.storage_service import StorageServiceInterface
 from domain.services.user.user_service_interface import UserServiceInterface
@@ -15,6 +16,7 @@ from domain.services.user.validation import UserValidationService
 from infrastructure.db_models.user.models import User
 from infrastructure.external_services.receipt.service import ExternalAPIService
 from infrastructure.external_services.storage.minio_service import MinIOService
+from infrastructure.services.achievements.ach_service_impl import AchievementServiceImpl
 from infrastructure.services.auth.auth_service import AuthorizationService
 from infrastructure.services.event.event_service_impl import EventServiceImpl
 from infrastructure.services.user.entity_validation import RegUserValidationService
@@ -46,6 +48,7 @@ class ServiceProvider(Provider):
     user_service = provide(
         UserServiceImpl, scope=Scope.REQUEST, provides=UserServiceInterface
     )
+    achievement_service = provide(AchievementServiceImpl, scope=Scope.REQUEST, provides=AchievementServiceInterface)
     storage_service = provide(
         MinIOService, scope=Scope.REQUEST, provides=StorageServiceInterface
     )
@@ -57,10 +60,10 @@ class ServiceProvider(Provider):
         return Firebase()
     @provide(scope=Scope.REQUEST)
     async def get_user(self, request: Request, session: AsyncSession, fb: Firebase) -> User: # noqa
-        token_id = request.headers.get("Authorization")
-        user_uid = (await auth_user_id_by_token(token_id)).get("id")
-        return await session.get(User, user_uid)
-        # return await session.get(User, "MPLbrcAiVPSSAdYmr1ldEmTXjJA2")
+        # token_id = request.headers.get("Authorization")
+        # user_uid = (await auth_user_id_by_token(token_id)).get("id")
+        # return await session.get(User, user_uid)
+        return await session.get(User, "MPLbrcAiVPSSAdYmr1ldEmTXjJA2")
 
     @provide(scope=Scope.REQUEST)
     async def get_data_by_auth_header(self, request: Request, fb: Firebase) -> UserLogin: # noqa

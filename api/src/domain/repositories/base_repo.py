@@ -24,8 +24,6 @@ class BaseRepository(ABC, Generic[T]):
     async def get_many_by_fields(
         self,
         search_data: dict[str, Any],
-        selected_fields: dict[Any, dict[Any, dict]],
-        order_by: dict[str, str] | None = None,
     ) -> list[T]:
         """Получает несколько записей по указанным критериям с возможностью сортировки."""
 
@@ -60,4 +58,8 @@ class BaseRepository(ABC, Generic[T]):
 
     @abstractmethod
     def get_random_rows(self, amount: int, exclude_ids: list[int] | None = None):
+        pass
+
+    @abstractmethod
+    async def get_all(self):
         pass

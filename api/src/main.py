@@ -17,6 +17,7 @@ from core.di.container import container
 from presentation.receipts.router import router as receipt_router
 from presentation.registration.router import router as reg_router
 from presentation.events.router import router as event_router
+from presentation.achievements.router import router as achievement_router
 
 import core.db.logs  # noqa: F401
 
@@ -42,11 +43,6 @@ setup_dishka(container=container, app=app)
 logger = logging.getLogger("fastapi")
 logger.setLevel(logging.INFO)
 
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
 # logstash_handler = TCPLogstashHandler("logstash", 50000)
 # logger.addHandler(logstash_handler)
 
@@ -64,6 +60,7 @@ def read_root():
 app.include_router(receipt_router)
 app.include_router(reg_router)
 app.include_router(event_router)
+app.include_router(achievement_router)
 
 origins = ["*"]
 app.add_middleware(

@@ -43,6 +43,9 @@ class BaseRepositoryImpl(BaseRepository[T], Generic[T]):
         query = self._session.query(self._model).filter(~self._model.id.in_(exclude_ids))
         return query.order_by(func.random()).limit(count).all()
 
+    async def get_all(self) -> list[T]:
+        await self._session.execute(select(self._model))
+
     async def get_by_fields(
         self,
         search_data: dict[str, Any],
