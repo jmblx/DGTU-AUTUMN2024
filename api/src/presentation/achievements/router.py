@@ -21,21 +21,22 @@ async def get_user_achievements(
     Возвращает список достижений с прогрессом для текущего пользователя.
     """
     achievements = await achievement_service.get_user_achievements(user.id)
+
     return [
         ReadAchWithProgress(
-            id=ach.id,
-            title=ach.title,
-            description=ach.description,
-            file_path=ach.file_path,
-            goal=ach.goal,
-            progress=ach.progress,
+            id=ach["achievement"].id,
+            title=ach["achievement"].title,
+            description=ach["achievement"].description,
+            file_path=ach["achievement"].file_path,
+            goal=ach["achievement"].goal,
+            progress=ach["progress"],
             rewards=[
                 RewardRead(
-                    id=reward.id,
-                    title=reward.title,
-                    file_path=reward.file_path,
-                    amount=reward.amount,
-                ) for reward in ach.rewards_ach
+                    id=reward_data["reward"].id,
+                    title=reward_data["reward"].title,
+                    file_path=reward_data["reward"].file_path,
+                    amount=reward_data["amount"],
+                ) for reward_data in ach["rewards"]
             ]
         ) for ach in achievements
     ]
@@ -50,22 +51,23 @@ async def get_user_achievement(
     Возвращает конкретное достижение с прогрессом для текущего пользователя.
     """
     achievement = await achievement_service.get_user_achievement_by_id(user.id, achievement_id)
+
     if not achievement:
         raise HTTPException(status_code=404, detail="Achievement not found")
 
     return ReadAchWithProgress(
-        id=achievement.id,
-        title=achievement.title,
-        description=achievement.description,
-        file_path=achievement.file_path,
-        goal=achievement.goal,
-        progress=achievement.progress,
+        id=achievement["achievement"].id,
+        title=achievement["achievement"].title,
+        description=achievement["achievement"].description,
+        file_path=achievement["achievement"].file_path,
+        goal=achievement["achievement"].goal,
+        progress=achievement["progress"],
         rewards=[
             RewardRead(
-                id=reward.id,
-                title=reward.title,
-                file_path=reward.file_path,
-                amount=reward.amount,
-            ) for reward in achievement.rewards_ach
+                id=reward_data["reward"].id,
+                title=reward_data["reward"].title,
+                file_path=reward_data["reward"].file_path,
+                amount=reward_data["amount"],
+            ) for reward_data in achievement["rewards"]
         ]
     )

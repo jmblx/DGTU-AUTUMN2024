@@ -1,10 +1,11 @@
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
+from typing import List, Any
 
 from domain.repositories.achievement.repo import AchievementRepository
-from infrastructure.db_models.achievement.models import Achievement, user_achievement
+from infrastructure.db_models.achievement.models import Achievement, user_achievement, reward_achievement
+from infrastructure.db_models.reward.models import Reward
 from infrastructure.repositories.base_repository import BaseRepositoryImpl
 
 
@@ -20,57 +21,67 @@ class AchievementRepositoryImpl(BaseRepositoryImpl[Achievement], AchievementRepo
         result = await self._session.execute(query)
         return result.scalars().all()
 
-    async def get_user_achievements(self, user_id: str) -> List[Achievement]:
+    async def get_user_achievements(self, user_id: str) -> List[dict[str, Any]]:
         """
-        Получает список достижений пользователя с прогрессом.
+        Получает список достижений пользователя с прогрессом и наградами.
         """
         query = (
-            select(Achievement)
-            .join(user_achievement)
+            select(Achievement, user_achievement.c.progress)
+            .join(user_achievement, user_achievement.c.achievement_id == Achievement.id)
             .where(user_achievement.c.user_id == user_id)
-            .options(
-                selectinload(Achievement.rewards_ach)
-            )
+            .options(selectinload(Achievement.rewards_ach))
         )
         result = await self._session.execute(query)
-        achievements = result.scalars().all()
+        achievements = result.fetchall()
 
-        # Добавляем прогресс из user_achievement для каждого достижения
-        for achievement in achievements:
-            achievement.progress = (
-                await self._session.execute(
-                    select(user_achievement.c.progress)
-                    .where(user_achievement.c.user_id == user_id)
-                    .where(user_achievement.c.achievement_id == achievement.id)
-                )
-            ).scalar()
+        enriched_achievements = []
+        for achievement, progress in achievements:
+            # Получаем награды с количеством для текущего достижения
+            reward_query = (
+                select(Reward, reward_achievement.c.amount)
+                .join(reward_achievement, Reward.id == reward_achievement.c.reward_id)
+                .where(reward_achievement.c.achievement_id == achievement.id)
+            )
+            rewards_with_amounts = await self._session.execute(reward_query)
+            rewards = rewards_with_amounts.all()
 
-        return achievements
+            # Формируем достижение с прогрессом и наградами
+            enriched_achievements.append({
+                "achievement": achievement,
+                "progress": progress,
+                "rewards": [{"reward": reward, "amount": amount} for reward, amount in rewards]
+            })
 
-    async def get_user_achievement_by_id(self, user_id: str, achievement_id: int) -> Achievement:
+        return enriched_achievements
+
+    async def get_user_achievement_by_id(self, user_id: str, achievement_id: int) -> dict[str, Any]:
         """
-        Получает одно достижение пользователя по ID с прогрессом.
+        Получает одно достижение пользователя по ID с прогрессом и наградами.
         """
         query = (
-            select(Achievement)
-            .join(user_achievement)
+            select(Achievement, user_achievement.c.progress)
+            .join(user_achievement, user_achievement.c.achievement_id == Achievement.id)
             .where(user_achievement.c.user_id == user_id)
             .where(Achievement.id == achievement_id)
-            .options(
-                selectinload(Achievement.rewards_ach)
-            )
+            .options(selectinload(Achievement.rewards_ach))
         )
         result = await self._session.execute(query)
-        achievement = result.scalar_one_or_none()
+        achievement, progress = result.one_or_none()
 
-        # Добавляем прогресс
-        if achievement:
-            achievement.progress = (
-                await self._session.execute(
-                    select(user_achievement.c.progress)
-                    .where(user_achievement.c.user_id == user_id)
-                    .where(user_achievement.c.achievement_id == achievement_id)
-                )
-            ).scalar()
+        if not achievement:
+            return None
 
-        return achievement
+        # Получаем награды с количеством для текущего достижения
+        reward_query = (
+            select(Reward, reward_achievement.c.amount)
+            .join(reward_achievement, Reward.id == reward_achievement.c.reward_id)
+            .where(reward_achievement.c.achievement_id == achievement.id)
+        )
+        rewards_with_amounts = await self._session.execute(reward_query)
+        rewards = rewards_with_amounts.all()
+
+        return {
+            "achievement": achievement,
+            "progress": progress,
+            "rewards": [{"reward": reward, "amount": amount} for reward, amount in rewards]
+        }
