@@ -12,6 +12,14 @@ class AchievementRepositoryImpl(BaseRepositoryImpl[Achievement], AchievementRepo
     def __init__(self, model: type[Achievement], session: AsyncSession):
         super().__init__(model, session)
 
+    async def get_all_achievements(self) -> List[Achievement]:
+        """
+        Возвращает список всех достижений.
+        """
+        query = select(Achievement)
+        result = await self._session.execute(query)
+        return result.scalars().all()
+
     async def get_user_achievements(self, user_id: str) -> List[Achievement]:
         """
         Получает список достижений пользователя с прогрессом.

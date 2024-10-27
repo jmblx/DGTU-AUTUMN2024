@@ -17,12 +17,11 @@ class UserServiceImpl(EntityServiceImpl[User], UserServiceInterface):
         self.achievement_repo = achievement_repo
 
     async def create_user_with_achievements(self, user_data: dict[str, Any]) -> User:
-        user = await self._base_repo.create(user_data)
+        user_id = await self._base_repo.create(user_data)
         achievements = await self.achievement_repo.get_all_achievements()
         user_achievements = [
-            {"user_id": user.id, "achievement_id": achievement.id, "progress": 0.0}
+            {"user_id": user_id, "achievement_id": achievement.id, "progress": 0.0}
             for achievement in achievements
         ]
         await self._base_repo.add_user_achievements(user_achievements)
-        return user
-
+        return user_id
