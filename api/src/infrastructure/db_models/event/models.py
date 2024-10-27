@@ -29,6 +29,7 @@ class Event(Base):
     rewards_ev = relationship("Reward", uselist=True, back_populates="events_rew", secondary=event_reward)
     file_path: Mapped[str] = mapped_column(nullable=True)
     amount: Mapped[float] = mapped_column(nullable=False)
+    user_events = relationship("UserEvent", back_populates="event")
 
 
 class UserEvent(Base):
@@ -40,3 +41,4 @@ class UserEvent(Base):
     event_id: Mapped[event_fk]
     progress: Mapped[float] = mapped_column(default=0, nullable=False)
     is_completed: Mapped[bool] = mapped_column(default=False)
+    event = relationship("Event", back_populates="user_events")

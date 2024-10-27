@@ -61,3 +61,9 @@ class EventServiceImpl(EntityServiceImpl[Event]):
         events_with_rewards = await self._base_repo.get_events_with_rewards(event_ids)
 
         return events_with_rewards
+
+    async def get_current_user_events(self, user_id: str) -> List[UserEvent]:
+        """
+        Возвращает список незавершенных задач пользователя.
+        """
+        return await self._base_repo.get_current_user_events(user_id)

@@ -63,7 +63,7 @@ class ServiceProvider(Provider):
         # token_id = request.headers.get("Authorization")
         # user_uid = (await auth_user_id_by_token(token_id)).get("id")
         # return await session.get(User, user_uid)
-        return await session.get(User, "MPLbrcAiVPSSAdYmr1ldEmTXjJA2")
+        return await session.get(User, "gNySnybUZLht9O8kfYQXGdUkkJG2")
 
     @provide(scope=Scope.REQUEST)
     async def get_data_by_auth_header(self, request: Request, fb: Firebase) -> UserLogin: # noqa

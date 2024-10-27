@@ -37,3 +37,32 @@ async def get_events(
             ],
         ) for event in events
     ]
+
+
+@router.get("/current-tasks", response_model=list[EventRead])
+async def get_current_tasks(
+    event_service: FromDishka[EventServiceInterface],
+    user: FromDishka[User]
+) -> list[EventRead]:
+    """
+    Возвращает список незавершенных задач текущего пользователя.
+    """
+    enriched_events = await event_service.get_current_user_events(user.id)
+
+    return [
+        EventRead(
+            id=user_event["user_event"].event_id,  # Исправлено
+            description=user_event["user_event"].event.description,
+            file_path=user_event["user_event"].event.file_path,
+            rewards=[
+                RewardRead(
+                    id=reward_data["reward"].id,
+                    title=reward_data["reward"].title,
+                    file_path=reward_data["reward"].file_path,
+                    amount=reward_data["amount"],
+                ) for reward_data in user_event["rewards"]
+            ]
+        ) for user_event in enriched_events
+    ]
+
+

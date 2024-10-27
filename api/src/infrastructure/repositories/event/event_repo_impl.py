@@ -102,3 +102,35 @@ class EventRepositoryImpl(BaseRepositoryImpl[Event], EventRepository):
         stmt = insert(UserEvent).values(user_event_data)
         await self._session.execute(stmt)
         await self._session.commit()
+
+    async def get_current_user_events(self, user_id: str) -> List[Dict[str, Any]]:
+        """
+        Возвращает список незавершенных задач пользователя с наградами и их количеством.
+        """
+        query = (
+            select(UserEvent)
+            .where(UserEvent.user_id == user_id)
+            .where(UserEvent.is_completed == False)  # Только незавершенные задачи
+            .options(selectinload(UserEvent.event))
+        )
+        result = await self._session.execute(query)
+        user_events = result.scalars().all()
+
+        enriched_events = []
+        for user_event in user_events:
+            # Получаем награды с их количеством для текущего события
+            reward_query = (
+                select(Reward, event_reward.c.amount)
+                .join(event_reward, Reward.id == event_reward.c.reward_id)
+                .where(event_reward.c.event_id == user_event.event_id)
+            )
+            rewards_with_amounts = await self._session.execute(reward_query)
+            rewards = rewards_with_amounts.all()
+
+            # Формируем задачи с наградами и их количеством
+            enriched_events.append({
+                "user_event": user_event,
+                "rewards": [{"reward": reward, "amount": amount} for reward, amount in rewards]
+            })
+
+        return enriched_events
