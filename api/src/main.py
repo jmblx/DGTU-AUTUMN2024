@@ -18,6 +18,7 @@ from presentation.receipts.router import router as receipt_router
 from presentation.registration.router import router as reg_router
 from presentation.events.router import router as event_router
 from presentation.achievements.router import router as achievement_router
+from presentation.rewards.router import router as inventory_router
 
 import core.db.logs  # noqa: F401
 
@@ -61,6 +62,7 @@ app.include_router(receipt_router)
 app.include_router(reg_router)
 app.include_router(event_router)
 app.include_router(achievement_router)
+app.include_router(inventory_router)
 
 origins = ["*"]
 app.add_middleware(
