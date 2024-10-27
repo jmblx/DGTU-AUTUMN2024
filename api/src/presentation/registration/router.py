@@ -13,4 +13,4 @@ router = APIRouter(route_class=DishkaRoute, tags=["reg", "auth"])
 @router.post("/user")
 async def registration(data: UserRegistration, user_service: FromDishka[UserServiceInterface], login_data: FromDishka[UserLogin]):
     combined_data = {**data.dict(), **login_data.dict()}
-    return await user_service.create(combined_data)
+    return await user_service.create_user_with_achievements(combined_data)
