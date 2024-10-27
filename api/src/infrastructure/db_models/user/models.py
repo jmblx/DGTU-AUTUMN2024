@@ -32,7 +32,7 @@ class User(Base):
         back_populates="users_rewards",
         secondary="user_reward",
     )
-    exp = Mapped[int]
+    exp: Mapped[int] = mapped_column(nullable=True)
     receipts = relationship(
         "Receipt",
         back_populates="user_receipt",

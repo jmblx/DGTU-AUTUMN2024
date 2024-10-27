@@ -1,12 +1,13 @@
 from typing import List, Any, Dict
 
-from sqlalchemy import select, func, delete, insert
+from sqlalchemy import select, func, delete, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from domain.repositories.event.repo import EventRepository
 from infrastructure.db_models.event.models import Event, UserEvent, event_reward
-from infrastructure.db_models.reward.models import Reward
+from infrastructure.db_models.reward.models import Reward, user_reward
+from infrastructure.db_models.user.models import User
 from infrastructure.repositories.base_repository import BaseRepositoryImpl
 
 
@@ -134,3 +135,50 @@ class EventRepositoryImpl(BaseRepositoryImpl[Event], EventRepository):
             })
 
         return enriched_events
+
+    async def get_task_by_id(self, task_id: int) -> Event:
+        """
+        Получает задание по ID.
+        """
+        query = select(Event).where(Event.id == task_id)
+        result = await self._session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_user_by_id(self, user_id: str) -> User:
+        """
+        Получает пользователя по ID.
+        """
+        query = select(User).where(User.id == user_id)
+        result = await self._session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def mark_task_as_completed(self, task_id: int, user_id: str):
+        """
+        Отмечает задачу как завершенную в таблице UserEvent.
+        """
+        query = (
+            update(UserEvent)
+            .where(UserEvent.event_id == task_id, UserEvent.user_id == user_id)
+            .values(is_completed=True)
+        )
+        await self._session.execute(query)
+        await self._session.commit()
+
+    async def get_rewards_for_task(self, task_id: int) -> List[tuple[Reward, int]]:
+        """
+        Получает награды и их количество, связанные с заданием.
+        """
+        query = (
+            select(Reward, event_reward.c.amount)
+            .join(event_reward, Reward.id == event_reward.c.reward_id)
+            .where(event_reward.c.event_id == task_id)
+        )
+        result = await self._session.execute(query)
+        return result.all()
+
+    async def add_user_rewards(self, user_id: str, rewards: List[Dict[str, any]]):
+        """
+        Добавляет награды пользователю в таблицу user_reward.
+        """
+        await self._session.execute(insert(user_reward).values(rewards))
+        await self._session.commit()

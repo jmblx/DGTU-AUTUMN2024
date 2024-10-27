@@ -1,13 +1,22 @@
+from io import BytesIO
+
+import qrcode
+from fastapi.templating import Jinja2Templates
+from fastapi import Request, HTTPException
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter, Query
+from starlette.responses import StreamingResponse
 
+from config import SERVER_BASE_URL
 from domain.services.event.event_service_interface import EventServiceInterface
 from infrastructure.db_models.user.models import User
 from presentation.events.schemas import EventRead
 from presentation.rewards.shemas import RewardRead
 
 router = APIRouter(tags=["events"], route_class=DishkaRoute)
+
+templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/random-events", response_model=list[EventRead])
@@ -65,4 +74,43 @@ async def get_current_tasks(
         ) for user_event in enriched_events
     ]
 
+@router.get("/generate-qrcode")
+async def generate_qr_code(task_id: int, user_id: str) -> StreamingResponse:
+    confirm_url = f"{SERVER_BASE_URL}/confirm-task?task_id={task_id}&user_id={user_id}"
 
+    # Генерация QR-кода
+    qr = qrcode.make(confirm_url)
+    buf = BytesIO()
+    qr.save(buf, format="PNG")
+    buf.seek(0)
+
+    return StreamingResponse(buf, media_type="image/png")
+
+
+@router.get("/confirm-task")
+async def confirm_task(
+    request: Request,
+    task_id: int,
+    user_id: str,
+    event_service: FromDishka[EventServiceInterface]
+):
+    """
+    Подтверждает выполнение задания, начисляет награды и отображает информацию о задании и пользователе.
+    """
+    # Получаем данные о задании и пользователе через сервис
+    task = await event_service.get_task_by_id(task_id)
+    user = await event_service.get_user_by_id(user_id)
+
+    if not task or not user:
+        raise HTTPException(status_code=404, detail="Task or User not found")
+
+    # Отмечаем задание как завершенное и начисляем награды
+    await event_service.mark_task_as_completed(task_id, user_id)
+
+    # Отображаем страницу подтверждения
+    return templates.TemplateResponse("confirmation.html", {
+        "request": request,
+        "task": task,
+        "user": user,
+        "message": "Спасибо за заботу о планете! Вы получили награды за выполнение задания."
+    })

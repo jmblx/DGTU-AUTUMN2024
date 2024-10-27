@@ -94,3 +94,6 @@ class FirebaseConfig:
             raise RuntimeError("Missing FIREBASE_CONFIG_PATH environment variable")
 
         return FirebaseConfig(uri)
+
+
+SERVER_BASE_URL = os.environ.get("SERVER_BASE_URL")

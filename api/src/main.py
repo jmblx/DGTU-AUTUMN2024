@@ -2,10 +2,6 @@ import logging
 from contextlib import asynccontextmanager
 
 from dishka.integrations.fastapi import (
-    DishkaRoute,
-    FromDishka,
-    FastapiProvider,
-    inject,
     setup_dishka,
 )
 from fastapi import FastAPI, APIRouter
@@ -29,6 +25,7 @@ from infrastructure.db_models.role.models import Role
 configure_mappers()
 
 # from auth.jwt_auth import router as jwt_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
