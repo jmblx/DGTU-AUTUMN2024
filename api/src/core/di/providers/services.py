@@ -60,9 +60,9 @@ class ServiceProvider(Provider):
         return Firebase()
     @provide(scope=Scope.REQUEST)
     async def get_user(self, request: Request, session: AsyncSession, fb: Firebase) -> User: # noqa
-        # token_id = request.headers.get("Authorization")
-        # user_uid = (await auth_user_id_by_token(token_id)).get("id")
-        # return await session.get(User, user_uid)
+        token_id = request.headers.get("Authorization")
+        user_uid = (await auth_user_id_by_token(token_id)).get("id")
+        return await session.get(User, user_uid)
         return await session.get(User, "gNySnybUZLht9O8kfYQXGdUkkJG2")
 
     @provide(scope=Scope.REQUEST)
