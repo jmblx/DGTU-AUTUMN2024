@@ -19,9 +19,15 @@
               "name": "Куриная грудка охлаждённая",
               "count": 0.98,
               "price": 299.99
+            },
+            {
+              "name": "Электро-велосипед",
+              "count": 1,
+              "price": 15000
             }
           ],
-          "total_price": 402.99
+          "total_price": 15402.99,
+          "distance_km": 30
         }
       ]
     },
@@ -32,25 +38,87 @@
       "access": false,
       "receipts": [
         {
-          "id": "receipt1",
+          "id": "receipt2",
           "time": "1729686754",
           "items": [
             {
-              "name": "Джем вишнёвый дой-пак",
-              "count": 2,
-              "price": 64.5
+              "name": "Куриная грудка охлаждённая",
+              "count": 0.5,
+              "price": 150
             },
             {
-              "name": "Куриная грудка охлаждённая",
-              "count": 0.98,
-              "price": 299.99
+              "name": "Апельсины",
+              "count": 1.5,
+              "price": 100
             }
           ],
-          "total_price": 402.99
+          "total_price": 250,
+          "distance_km": 15
         }
       ],
       "confirmation_code": "748177",
       "code_expiry": 1829966832
+    },
+    {
+      "id": "3",
+      "email": "user3@example.com",
+      "phone_number": "79990401122",
+      "access": true,
+      "receipts": [
+        {
+          "id": "receipt3",
+          "time": "1729686754",
+          "items": [
+            {
+              "name": "Хлеб",
+              "count": 1,
+              "price": 30
+            },
+            {
+              "name": "Молоко",
+              "count": 1,
+              "price": 50
+            },
+            {
+              "name": "Проезд на автобусе",
+              "count": 10,
+              "price": 200
+            }
+          ],
+          "total_price": 280,
+          "distance_km": 5
+        }
+      ],
+      "confirmation_code": "457893",
+      "code_expiry": 1834567890
+    },
+    {
+      "id": "4",
+      "email": "anotheruser@example.com",
+      "phone_number": "79990501122",
+      "access": false,
+      "receipts": [
+        {
+          "id": "receipt4",
+          "time": "1729686754",
+          "items": [
+            {
+              "name": "Шоколад",
+              "count": 3,
+              "price": 150
+            },
+            {
+              "name": "Бананы",
+              "count": 2,
+              "price": 80
+            }
+          ],
+          "total_price": 310,
+          "distance_km": 20
+        }
+      ],
+      "confirmation_code": "348912",
+      "code_expiry": 1840045600
     }
   ]
 }

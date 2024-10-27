@@ -1,19 +1,20 @@
-"""Add achievement_reward and event_reward tables
+"""empty message
 
-Revision ID: e2447e5315c7
+Revision ID: a9a74f9dbadb
 Revises: 
-Create Date: 2024-10-27 00:41:29.849138
+Create Date: 2024-10-27 12:40:00.860516
 
 """
+from datetime import datetime
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy import JSON
+from sqlalchemy import column, String, Integer, DateTime, Float, table, Boolean, JSON
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = 'e2447e5315c7'
+revision: str = 'a9a74f9dbadb'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,7 +26,8 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('title', sa.String(), nullable=False),
     sa.Column('description', sa.String(), nullable=False),
-    sa.Column('file_path', sa.String(), nullable=False),
+    sa.Column('file_path', sa.String(), nullable=True),
+    sa.Column('goal', sa.Float(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('district',
@@ -78,6 +80,7 @@ def upgrade() -> None:
     sa.Column('file_path', sa.String(), nullable=True),
     sa.Column('registered_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=True),
     sa.Column('balance', sa.DECIMAL(precision=10, scale=2), nullable=False),
+    sa.Column('exp', sa.Integer(), nullable=True),
     sa.Column('address', sa.String(), nullable=True),
     sa.Column('district_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['district_id'], ['district.id'], ),
@@ -97,7 +100,8 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('achievement_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.String(), nullable=False),
-    sa.Column('achieved_time', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=True),
+    sa.Column('achieved_time', sa.DateTime(), nullable=True),
+    sa.Column('progress', sa.Float(), nullable=False),
     sa.ForeignKeyConstraint(['achievement_id'], ['achievement.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -218,24 +222,24 @@ def upgrade() -> None:
         EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 2, "amount": 50})  # xp
         event_counter += 1
 
-        # Сложное задание
-        op.execute(
-            sa.insert(sa.table('event',
-                               sa.Column('id', sa.Integer),
-                               sa.Column('description', sa.String),
-                               sa.Column('amount', sa.Float),
-                               sa.Column('file_path', sa.String),
-                               sa.Column('is_group', sa.Boolean)))
-            .values(id=event_counter, description=f"{description.format(50)}", amount=50, is_group=False)
-        )
-        EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 1, "amount": 30})  # leaves
-        EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 2, "amount": 70})  # xp
+    # Сложное задание
+    op.execute(
+        sa.insert(sa.table('event',
+                           sa.Column('id', sa.Integer),
+                           sa.Column('description', sa.String),
+                           sa.Column('amount', sa.Float),
+                           sa.Column('file_path', sa.String),
+                           sa.Column('is_group', sa.Boolean)))
+        .values(id=event_counter, description=f"{description.format(50)}", amount=50, is_group=False)
+    )
+    EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 1, "amount": 30})  # leaves
+    EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 2, "amount": 70})  # xp
 
-        # Добавляем билет для некоторых сложных задач
-        if event_name in ["Отчистка берега", "Сдать батарейки"]:
-            EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 6, "amount": 1})  # ticket
+    # Добавляем билет для некоторых сложных задач
+    if event_name in ["Отчистка берега", "Сдать батарейки"]:
+        EVENT_REWARDS.append({"event_id": event_counter, "reward_id": 6, "amount": 1})  # ticket
 
-        event_counter += 1
+    event_counter += 1
 
     # Выполняем bulk insert для связи event_reward
     op.bulk_insert(sa.table('event_reward',
@@ -244,9 +248,197 @@ def upgrade() -> None:
                             sa.Column('amount', sa.Integer)),
                    EVENT_REWARDS)
 
+    ACHIEVEMENT_REWARDS = [
+        {"achievement_id": 1, "reward_id": 2, "amount": 30},  # Эко-Исследователь – XP
+        {"achievement_id": 2, "reward_id": 1, "amount": 10},  # Батарейный Герой – листья
+        {"achievement_id": 3, "reward_id": 1, "amount": 20},  # Пластиковый Спасатель – листья
+        {"achievement_id": 4, "reward_id": 2, "amount": 50},  # Мастер Сортировки – XP
+        {"achievement_id": 5, "reward_id": 1, "amount": 30},  # Защитник Берега – листья
+        {"achievement_id": 6, "reward_id": 5, "amount": 1},  # Экологический Патруль – худи
+        {"achievement_id": 7, "reward_id": 2, "amount": 70},  # Эко-Чемпион – XP
+        {"achievement_id": 8, "reward_id": 4, "amount": 1},  # Эко-Транспорт – футболка
+        {"achievement_id": 9, "reward_id": 1, "amount": 15},  # Эко-Питание – листья
+        {"achievement_id": 10, "reward_id": 6, "amount": 1}  # Чистота без вреда – билет
+    ]
+    ACHIEVEMENTS = [
+        {
+            "id": 1,
+            "title": "Эко-Исследователь",
+            "description": "Посетите 3 семинара и правильно ответьте на все вопросы.",
+            "file_path": "http://90.156.170.155:9001/achievements/eco-researcher.png",
+            "goal": 3.0
+        },
+        {
+            "id": 2,
+            "title": "Батарейный Герой",
+            "description": "Сдайте 10 батареек в пункт приема для улучшения экологической обстановки.",
+            "file_path": "http://90.156.170.155:9001/achievements/battery-hero.png",
+            "goal": 10.0
+        },
+        {
+            "id": 3,
+            "title": "Пластиковый Спасатель",
+            "description": "Сдайте 20 пластиковых бутылок для переработки.",
+            "file_path": "http://90.156.170.155:9001/achievements/plastic-savior.png",
+            "goal": 20.0
+        },
+        {
+            "id": 4,
+            "title": "Мастер Сортировки",
+            "description": "Отсортируйте 5 кг мусора в специализированных контейнерах.",
+            "file_path": "http://90.156.170.155:9001/achievements/sorting-master.png",
+            "goal": 5.0
+        },
+        {
+            "id": 5,
+            "title": "Защитник Берега",
+            "description": "Очистите не менее 10 кв. м берега от отходов.",
+            "file_path": "http://90.156.170.155:9001/achievements/beach-guardian.png",
+            "goal": 10.0
+        },
+        {
+            "id": 6,
+            "title": "Экологический Патруль",
+            "description": "Выполните все пять видов заданий хотя бы по одному разу.",
+            "file_path": "http://90.156.170.155:9001/achievements/ecological-patrol.png",
+            "goal": 5.0  # 5 типов задач
+        },
+        {
+            "id": 7,
+            "title": "Эко-Чемпион",
+            "description": "Завершите 10 заданий любого типа, внося вклад в защиту окружающей среды.",
+            "file_path": "http://90.156.170.155:9001/achievements/eco-champion.png",
+            "goal": 10.0
+        },
+        {
+            "id": 8,
+            "title": "Эко-Транспорт",
+            "description": "Купите не менее 3 единиц экологичного транспорта (велосипед, электросамокат и т.п.).",
+            "file_path": "http://90.156.170.155:9001/achievements/eco-transport.png",
+            "goal": 3.0
+        },
+        {
+            "id": 9,
+            "title": "Эко-Питание",
+            "description": "Приобретите 5 продуктов с маркировкой 'органическое' или 'с минимальным углеродным следом'.",
+            "file_path": "http://90.156.170.155:9001/achievements/eco-food.png",
+            "goal": 5.0
+        },
+        {
+            "id": 10,
+            "title": "Чистота без вреда",
+            "description": "Купите 3 продукта для гигиены с экологичной упаковкой или минимальным углеродным следом.",
+            "file_path": "http://90.156.170.155:9001/achievements/clean-without-harm.png",
+            "goal": 3.0
+        }
+    ]
+    op.bulk_insert(
+        sa.table(
+            'achievement',
+            sa.Column('id', sa.Integer, primary_key=True),
+            sa.Column('title', sa.String, nullable=False),
+
+
+    sa.Column('description', sa.String, nullable=False),
+    sa.Column('file_path', sa.String, nullable=True),
+    sa.Column('goal', sa.Float, nullable=True)
+    ),
+    ACHIEVEMENTS
+    )
+
+    # Вставляем связи между достижениями и наградами
+    op.bulk_insert(
+        sa.table(
+            'reward_achievement',  # Убедитесь, что имя таблицы соответствует вашей схеме
+            sa.Column('achievement_id', sa.Integer, nullable=False),
+            sa.Column('reward_id', sa.Integer, nullable=False),
+            sa.Column('amount', sa.Integer, nullable=False)
+        ),
+        ACHIEVEMENT_REWARDS
+    )
+
+
+
+
+    user_table = table(
+        "user",
+        column("id", String),
+        column("first_name", String),
+        column("last_name", String),
+        column("email", String),
+        column("balance", Float),
+        column("exp", Integer),
+        column("registered_at", DateTime),
+        column("role_id", Integer),
+        column("address", String)
+    )
+
+    user_achievement_table = table(
+        "user_achievement",
+        column("user_id", String),
+        column("achievement_id", Integer),
+        column("progress", Float),
+        column("achieved_time", DateTime),
+    )
+
+    user_reward_table = table(
+        "user_reward",
+        column("user_id", String),
+        column("reward_id", Integer),
+        column("amount", Integer),
+        column("is_used", Boolean),
+        column("received_date", DateTime),
+    )
+
+    # Вставка пользователя
+    op.bulk_insert(
+        user_table,
+        [
+            {
+                "id": "cTqj1BzxfWS9gQGgn033WIcmn4e2",
+                "first_name": "Egor",
+                "last_name": "Ybica",
+                "email": "zhora.zhilin.06@mail.ru",
+                "balance": 100.0,
+                "exp": 200,
+                "role_id": 1,
+                "address": "1-го Гвардейского авиаполка, площадь; Советский район Ростова-на-Дону.",
+
+                "registered_at": datetime.utcnow(),
+            }
+        ]
+    )
+
+    # Связывание пользователя с достижениями, предположим, что достижения с id 1, 2 и 3 уже существуют в БД
+    op.bulk_insert(
+        user_achievement_table,
+        [
+            {"user_id": "cTqj1BzxfWS9gQGgn033WIcmn4e2", "achievement_id": 1, "progress": 3,
+             "achieved_time": datetime.utcnow()},
+            {"user_id": "cTqj1BzxfWS9gQGgn033WIcmn4e2", "achievement_id": 2, "progress": 10,
+             "achieved_time": datetime.utcnow()},
+            {"user_id": "cTqj1BzxfWS9gQGgn033WIcmn4e2", "achievement_id": 3, "progress": 20,
+             "achieved_time": datetime.utcnow()},
+        ]
+    )
+
+    # Связывание пользователя с наградами, предположим, что награды с id 1, 2 и 6 уже существуют в БД
+    op.bulk_insert(
+        user_reward_table,
+        [
+            {"user_id": "cTqj1BzxfWS9gQGgn033WIcmn4e2", "reward_id": 1, "amount": 10, "is_used": False,
+             "received_date": datetime.utcnow()},
+            {"user_id": "cTqj1BzxfWS9gQGgn033WIcmn4e2", "reward_id": 2, "amount": 50, "is_used": False,
+             "received_date": datetime.utcnow()},
+            {"user_id": "cTqj1BzxfWS9gQGgn033WIcmn4e2", "reward_id": 6, "amount": 1, "is_used": False,
+             "received_date": datetime.utcnow()},
+        ]
+    )
+
+
 
 def downgrade() -> None:
-
+    # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('receipt_items')
     op.drop_table('user_reward')
     op.drop_table('user_event')

@@ -19,6 +19,7 @@ redis = "^5.2.0"
 firebase-admin = "^6.5.0"
 qrcode = "^8.0"
 pillow = "^11.0.0"
+minio = "^7.2.10"
 
 [tool.poetry.group.dev.dependencies]
 setuptools = "^75.2.0"
